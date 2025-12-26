@@ -94,19 +94,28 @@ ventilator-pressure-prediction/
 - `colsample_bytree`: 0.6 - 1.0
 
 **Результат:** Лучшая модель с параметрами из 15 trials Optuna
+**Сравнение с LAMA Baseline:**
+| Модель | Признаки | Public | Private |
+|--------|----------|--------|---------|
+| **LAMA Config 5** | 12 (5+7 FE) | 0.8480 | 0.8491 |
+| **Custom LGBM** | 12 (5+7 FE) | **0.7761** | **0.779** |
+
+**Вывод:** несмотря на сильный результат LightAutoML с Feature Engineering, ручная настройка LightGBM с использованием Optuna позволила получить лучшее итоговое качество на Public и Private Leaderboard.
 
 ---
 
 ## Итоговые результаты
 
-**Лучшая модель:** LAMA Deep + Feature Engineering
+**Лучшая модель:** Custom LightGBM + Optuna + Feature Engineering
 
 | Метрика | Значение |
-|---------|----------|
-| **Kaggle Public Score** | **0.8480** |
-| **Kaggle Private Score** | **0.8491** |
-| Алгоритм | LightGBM (5-fold ensemble) |
+|--------|----------|
+| Kaggle Public Score | 0.7761 |
+| Kaggle Private Score | 0.7790 |
+| Алгоритм | LightGBM + Optuna (5-fold GroupKFold) |
 | Признаков | 12 (5 базовых + 7 FE) |
+
+
 
 **Скриншот всех решений на Kaggle:**
 
@@ -147,7 +156,8 @@ poetry install
 
 1. **Feature Engineering критичен**: добавление lag-признаков и взаимодействий R×C улучшило результат в 4 раза
 2. **Временная структура**: дала чуть лучший результат благодаря использованию GroupKFold по breath_id (предотвращает утечку данных)
-3. **LAMA эффективен**: даже базовый LAMA показал слабые результаты (MAE ~3.7)
+3. **LightAutoML удобен как baseline**: позволяет быстро получить рабочее решение,
+но уступает кастомной модели с ручным Feature Engineering и Optuna.
 4. **Физический смысл признаков**: признаки с физическим обоснованием (u_in_cumsum, R_x_C) показывают лучшие результаты
 
 ---
